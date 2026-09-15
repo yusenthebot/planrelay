@@ -1,0 +1,18 @@
+{
+  "name": "planrelay",
+  "version": "0.1.0",
+  "description": "Manual project-context and web-plan handoff to Codex. No API keys or browser automation.",
+  "author": {
+    "name": "yusenthebot"
+  },
+  "skills": "./skills/",
+  "interface": {
+    "displayName": "PlanRelay",
+    "shortDescription": "Think on the web. Build in Codex.",
+    "longDescription": "Export selected context, manually plan on the web, then import the answer as a local Codex handoff with baseline checks.",
+    "developerName": "yusenthebot",
+    "category": "Productivity",
+    "capabilities": [],
+    "defaultPrompt": "Use PlanRelay to prepare selected project context for web planning or import my saved plan into a Codex handoff."
+  }
+}
