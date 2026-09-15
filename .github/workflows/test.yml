@@ -18,9 +18,9 @@ jobs:
         with:
           python-version: ${{ matrix.python }}
       - run: uv sync --locked
-      - run: uv run pytest --cov=planrelay --cov-fail-under=80
+      - run: uv run pytest --cov=planrelay --cov=planrelay_bridge --cov-fail-under=80
       - run: uv run ruff check .
       - run: uv run ruff format --check .
       - run: uv run mypy
-      - run: uv run bandit -r skills/planrelay/scripts
+      - run: uv run bandit -r src skills/planrelay/scripts
       - run: uv run pip-audit

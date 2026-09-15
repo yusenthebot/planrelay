@@ -1,18 +1,21 @@
 {
   "name": "planrelay",
-  "version": "0.1.0",
-  "description": "Manual project-context and web-plan handoff to Codex. No API keys or browser automation.",
+  "version": "0.1.0+codex.20260915214023",
+  "description": "Experimental authenticated MCP bridge from web planning to a paired local Codex worker.",
   "author": {
     "name": "yusenthebot"
   },
   "skills": "./skills/",
+  "mcpServers": "./.mcp.json",
+  "repository": "https://github.com/yusenthebot/planrelay",
+  "license": "MIT",
   "interface": {
     "displayName": "PlanRelay",
     "shortDescription": "Think on the web. Build in Codex.",
-    "longDescription": "Export selected context, manually plan on the web, then import the answer as a local Codex handoff with baseline checks.",
+    "longDescription": "Experimental web-to-Codex MCP bridge. Execution defaults off; opt-in macOS process cleanup is best-effort. Requires HTTPS hosting, OAuth, device pairing and project binding. The installed Codex companion reads context and results.",
     "developerName": "yusenthebot",
     "category": "Productivity",
     "capabilities": [],
-    "defaultPrompt": "Use PlanRelay to prepare selected project context for web planning or import my saved plan into a Codex handoff."
+    "defaultPrompt": "Use PlanRelay to inspect my paired project context or a run result. Help configure the web-to-Codex workflow without exposing login credentials."
   }
 }

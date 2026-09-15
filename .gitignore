@@ -13,3 +13,7 @@ dist/
 planrelay-export*/
 planrelay-handoff*/
 *.egg-info/
+*.sqlite
+*.sqlite-*
+worker.json
+artifacts/
