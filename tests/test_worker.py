@@ -22,6 +22,12 @@ from planrelay_bridge.worker import WorkerConfig, run_once, snapshot
 def fake_codex_profiles(monkeypatch: pytest.MonkeyPatch, config: WorkerConfig) -> None:
     config.experimental_execution = True
     monkeypatch.setattr(worker, "_preflight", lambda *_: None)
+    real_executable = worker._executable
+    monkeypatch.setattr(
+        worker,
+        "_executable",
+        lambda name: "/synthetic/codex" if name == "codex" else real_executable(name),
+    )
 
 
 @pytest.fixture
@@ -411,6 +417,7 @@ def test_sensitive_tracked_checkout_blocks(config: WorkerConfig) -> None:
 def test_unvalidated_runtime_blocks_before_model(
     config: WorkerConfig, monkeypatch: pytest.MonkeyPatch
 ) -> None:
+    monkeypatch.setattr(worker, "_executable", lambda _: "/synthetic/codex")
     monkeypatch.setattr(
         worker,
         "_capture",

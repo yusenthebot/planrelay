@@ -1,6 +1,6 @@
 {
   "name": "planrelay",
-  "version": "0.1.0+codex.20260915213746",
+  "version": "0.1.0+codex.20260915214023",
   "description": "Experimental authenticated MCP bridge from web planning to a paired local Codex worker.",
   "author": {
     "name": "yusenthebot"
