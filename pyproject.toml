@@ -1,9 +1,15 @@
 [project]
 name = "planrelay"
 version = "0.1.0"
-description = "A local, manual planning handoff between web ChatGPT and Codex"
+description = "Authenticated MCP planning relay with a paired local Codex worker"
 requires-python = ">=3.12"
-dependencies = []
+dependencies = [
+    "httpx>=0.28,<1",
+    "mcp>=1.28,<2",
+    "psutil>=7,<8",
+    "pyjwt[crypto]>=2.10,<3",
+    "uvicorn>=0.35,<1",
+]
 
 [dependency-groups]
 dev = [
@@ -13,11 +19,12 @@ dev = [
   "mypy>=1.15,<2",
   "bandit>=1.8,<2",
   "pip-audit>=2.9,<3",
+  "types-psutil>=7,<8",
 ]
 
 [tool.pytest.ini_options]
 testpaths = ["tests"]
-pythonpath = ["skills/planrelay/scripts"]
+pythonpath = ["skills/planrelay/scripts", "src"]
 
 [tool.ruff]
 target-version = "py312"
@@ -29,4 +36,14 @@ select = ["E", "F", "I", "UP", "B"]
 [tool.mypy]
 python_version = "3.12"
 strict = true
-files = ["skills/planrelay/scripts"]
+files = ["skills/planrelay/scripts", "src"]
+
+[build-system]
+requires = ["hatchling>=1.27,<2"]
+build-backend = "hatchling.build"
+
+[tool.hatch.build.targets.wheel]
+packages = ["src/planrelay_bridge"]
+
+[project.scripts]
+planrelay = "planrelay_bridge.cli:main"

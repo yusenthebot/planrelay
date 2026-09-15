@@ -1,0 +1,10 @@
+{
+  "mcpServers": {
+    "planrelay": {
+      "command": "./bin/planrelay-launcher",
+      "args": [],
+      "cwd": ".",
+      "env_vars": ["PLANRELAY_CONFIG"]
+    }
+  }
+}
