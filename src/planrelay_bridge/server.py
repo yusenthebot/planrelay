@@ -195,7 +195,7 @@ def make_server(
 
         verifier = create_verifier(settings)
     server = FastMCP(
-        "PlanRelay",
+        "GPT Connector",
         instructions=(
             "Review project context, submit an approved plan, "
             "and track its local execution."

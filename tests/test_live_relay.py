@@ -175,10 +175,15 @@ def test_real_http_model_result_roundtrip(tmp_path: Path) -> None:
                     values["token"] = config.token.get_secret_value()
                     private.write_text(json.dumps(values), encoding="utf-8")
                     private.chmod(0o600)
-                    launcher = (
-                        Path(__file__).resolve().parents[1]
-                        / "bin"
-                        / "planrelay-launcher"
+                    launcher = Path(
+                        os.environ.get(
+                            "PLANPORT_TEST_LAUNCHER",
+                            str(
+                                Path(__file__).resolve().parents[1]
+                                / "bin"
+                                / "gpt-connector-launcher"
+                            ),
+                        )
                     )
                     parameters = StdioServerParameters(
                         command=str(launcher),

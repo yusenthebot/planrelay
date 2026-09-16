@@ -1,7 +1,7 @@
 {
-  "name": "planrelay",
-  "version": "0.1.0+codex.20260915214023",
-  "description": "Experimental authenticated MCP bridge from web planning to a paired local Codex worker.",
+  "name": "gpt-connector",
+  "version": "0.1.0+codex.20260916021027",
+  "description": "Connect web planning to local Codex through a private GitHub mailbox, with an optional self-hosted MCP bridge.",
   "author": {
     "name": "yusenthebot"
   },
@@ -10,12 +10,15 @@
   "repository": "https://github.com/yusenthebot/planrelay",
   "license": "MIT",
   "interface": {
-    "displayName": "PlanRelay",
+    "displayName": "GPT Connector",
     "shortDescription": "Think on the web. Build in Codex.",
-    "longDescription": "Experimental web-to-Codex MCP bridge. Execution defaults off; opt-in macOS process cleanup is best-effort. Requires HTTPS hosting, OAuth, device pairing and project binding. The installed Codex companion reads context and results.",
+    "longDescription": "Three prompts connect web planning and local Codex through your own private GitHub repo. Each received task automatically gets a separate branch with context, task and result records. Web authorization and real GitHub tools are required. No unattended execution or automatic business-code pushes. Optional self-hosted MCP bridge remains available.",
     "developerName": "yusenthebot",
     "category": "Productivity",
     "capabilities": [],
-    "defaultPrompt": "Use PlanRelay to inspect my paired project context or a run result. Help configure the web-to-Codex workflow without exposing login credentials."
+    "defaultPrompt": [
+      "Use GPT Connector to connect this project through my private GitHub repo.",
+      "Use GPT Connector to receive an approved task and create its mailbox branch."
+    ]
   }
 }

@@ -490,9 +490,11 @@ def test_checkout_smudge_never_runs(config: WorkerConfig) -> None:
         ],
         check=True,
     )
-    client, _ = transport(config)
-    result = run_once(config, client, lambda *_: pytest.fail("must not execute"))
-    assert result["state"] == "blocked"
+    with httpx.Client(
+        transport=httpx.MockTransport(lambda _: pytest.fail("must not upload or claim"))
+    ) as client:
+        with pytest.raises(ValueError, match="Unsafe"):
+            run_once(config, client, lambda *_: pytest.fail("must not execute"))
     assert not canary.exists()
 
 
@@ -627,8 +629,10 @@ def test_lazy_fetch_cannot_execute_external_helper(
     assert re.fullmatch(r"[a-f0-9]{40}", blob)
     (config.project / ".git" / "objects" / blob[:2] / blob[2:]).unlink()
     config = config.model_copy(update={"experimental_execution": experimental})
-    client, _ = transport(config)
-    result = run_once(config, client)
-    assert result and result["state"] == "blocked"
+    with httpx.Client(
+        transport=httpx.MockTransport(lambda _: pytest.fail("must not upload or claim"))
+    ) as client:
+        with pytest.raises(ValueError, match="Unsafe"):
+            run_once(config, client)
     assert not canary.exists()
     assert not config.artifacts.exists()

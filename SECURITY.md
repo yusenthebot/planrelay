@@ -1,6 +1,6 @@
 # Security
 
-PlanRelay includes an authenticated remote MCP queue and paired local worker.
+GPT Connector includes an authenticated remote MCP queue and paired local worker.
 The worker sends selected source context and bounded results to the configured
 bridge, and runs locally authenticated Codex in a detached worktree. The optional
 legacy export/import script alone is offline. Git uses fixed argument arrays,

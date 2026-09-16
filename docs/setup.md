@@ -4,8 +4,11 @@ No hosted service or identity provider is included. Provide an OAuth server
 supporting ChatGPT MCP authorization/client onboarding, scope planrelay and
 RS256 JWT access tokens. Tokens require iss, sub, iat, exp and aud exactly
 matching the public MCP endpoint. Configure your own stable owner subject.
-Feishu browser login alone is not this OAuth resource-server contract: an
-existing login gateway may need an OAuth/JWT adapter.
+No enterprise-specific login is required. Use any established identity provider
+that satisfies this MCP OAuth contract. GitHub may be its upstream login option;
+a GitHub OAuth token or local gh credential is not the MCP RS256 access token.
+The bridge verifies its own audience/scopes and owner identity, not the local
+GitHub username. This repository does not include a hosted GitHub login service.
 
 ```sh
 export PLANRELAY_PUBLIC_URL=https://relay.example.com/mcp
@@ -15,7 +18,7 @@ export PLANRELAY_OWNER_SUBJECT=your-stable-subject
 export PLANRELAY_DATABASE=/absolute/private/relay.sqlite
 export PLANRELAY_HOST=127.0.0.1
 export PLANRELAY_PORT=8787
-uv run planrelay serve
+uv run gpt-connector serve
 ```
 
 Placeholders are not working URLs. Put a TLS reverse proxy before this server.

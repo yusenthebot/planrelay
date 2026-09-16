@@ -1,10 +1,10 @@
 {
   "mcpServers": {
-    "planrelay": {
-      "command": "./bin/planrelay-launcher",
+    "gpt-connector": {
+      "command": "./bin/gpt-connector-launcher",
       "args": [],
       "cwd": ".",
-      "env_vars": ["PLANRELAY_CONFIG"]
+      "env_vars": ["PLANRELAY_CONFIG", "GPT_CONNECTOR_GITHUB_CONFIG"]
     }
   }
 }

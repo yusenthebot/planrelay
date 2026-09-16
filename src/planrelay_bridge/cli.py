@@ -89,12 +89,15 @@ def _pair(args: argparse.Namespace) -> None:
         "artifacts": args.artifacts,
         "max_runs": args.max_runs,
         "experimental_execution": args.experimental_execution,
+        "github_repository": getattr(args, "github", None),
     }
     config = WorkerConfig.model_validate(values)
     baseline = worker.snapshot(config)  # Validate Git root and every file before RPC.
     code = args.code if args.code is not None else getpass.getpass("Pairing code: ")
     if not code:
         raise ValueError("Pairing code is required.")
+    if worker.snapshot(config)["revision"] != baseline["revision"]:
+        raise ValueError("Project baseline changed during pairing; retry.")
     target = args.config.resolve()
     if any(
         target == root or root in target.parents
@@ -128,6 +131,8 @@ def _pair(args: argparse.Namespace) -> None:
             os.fsync(stream.fileno())
             saved = True
         with httpx.Client(trust_env=False) as client:
+            if worker.snapshot(config)["revision"] != baseline["revision"]:
+                raise ValueError("Project baseline changed during pairing; resync.")
             worker._post(client, config, "/worker/projects", baseline)
     finally:
         try:
@@ -186,13 +191,23 @@ def doctor(config_path: Path | None = None) -> dict[str, Any]:
 
 
 def parser() -> argparse.ArgumentParser:
-    result = argparse.ArgumentParser(prog="planrelay")
+    from .mailbox_cli import add_parser
+
+    result = argparse.ArgumentParser(prog="gpt-connector")
     commands = result.add_subparsers(dest="command", required=True)
+    add_parser(commands)
     commands.add_parser("serve", help="Serve using explicit PLANRELAY settings")
+    inspection = commands.add_parser(
+        "inspect", help="Inspect local Git project identity"
+    )
+    inspection.add_argument("--project", type=Path, required=True)
     pairing = commands.add_parser("pair", help="Pair and register explicit excerpts")
     pairing.add_argument("--bridge", required=True)
     pairing.add_argument("--project", type=Path, required=True)
     pairing.add_argument("--project-id", required=True)
+    pairing.add_argument(
+        "--github", help="Require the matching GitHub owner/repository"
+    )
     pairing.add_argument("--file", action="append", required=True)
     pairing.add_argument("--artifacts", type=Path, required=True)
     pairing.add_argument("--config", type=Path, default=default_config_path())
@@ -206,8 +221,14 @@ def parser() -> argparse.ArgumentParser:
     local = commands.add_parser("worker", help="Run the paired bounded local worker")
     local.add_argument("--config", type=Path, default=default_config_path())
     local.add_argument("--once", action="store_true")
+    synchronization = commands.add_parser(
+        "sync",
+        help="Refresh paired project excerpts without claiming or executing runs",
+    )
+    synchronization.add_argument("--config", type=Path, default=default_config_path())
     proxy = commands.add_parser("mcp", help="Run a paired read-only stdio MCP proxy")
-    proxy.add_argument("--config", type=Path, default=default_config_path())
+    proxy.add_argument("--config", type=Path)
+    proxy.add_argument("--github-config", type=Path)
     diagnostic = commands.add_parser("doctor", help="Check local prerequisites")
     diagnostic.add_argument("--config", type=Path)
     return result
@@ -216,21 +237,54 @@ def parser() -> argparse.ArgumentParser:
 def main(argv: list[str] | None = None) -> int:
     args = parser().parse_args(argv)
     try:
-        if args.command == "serve":
+        if args.command == "github":
+            from .mailbox_cli import run
+
+            _emit(run(args))
+        elif args.command == "serve":
             import uvicorn
 
             settings = Settings.from_environment()
             uvicorn.run(create_app(settings), host=settings.host, port=settings.port)
         elif args.command == "pair":
             _pair(args)
+        elif args.command == "inspect":
+            _emit(worker.inspect_project(args.project))
+        elif args.command == "sync":
+            config = load_config(args.config)
+            baseline = worker.sync(config)
+            _emit(
+                {
+                    "synced": True,
+                    "project_id": config.project_id,
+                    "revision": baseline["revision"],
+                }
+            )
         elif args.command == "worker":
             config = load_config(args.config)
             value = worker.run_once(config) if args.once else worker.run(config)
             _emit(_worker_summary(value, config))
         elif args.command == "mcp":
-            from .proxy import create_proxy
+            from .mailbox_cli import default_path
 
-            create_proxy(load_config(args.config)).run(transport="stdio")
+            if args.config is not None and args.github_config is not None:
+                raise ValueError("Choose one explicit MCP configuration mode.")
+            github_path = args.github_config or default_path()
+            if args.github_config is not None or (
+                github_path.exists()
+                and args.config is None
+                and not os.environ.get("PLANRELAY_CONFIG")
+            ):
+                from .mailbox import load_config as load_mailbox
+                from .mailbox_proxy import create_proxy
+
+                create_proxy(load_mailbox(github_path)).run(transport="stdio")
+            else:
+                from .proxy import create_proxy as create_bridge_proxy
+
+                create_bridge_proxy(
+                    load_config(args.config or default_config_path())
+                ).run(transport="stdio")
         else:
             value = doctor(args.config)
             _emit(value)

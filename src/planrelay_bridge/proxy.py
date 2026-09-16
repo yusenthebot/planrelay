@@ -16,7 +16,7 @@ from .worker import WorkerConfig
 
 def create_proxy(config: WorkerConfig) -> FastMCP:
     server = FastMCP(
-        "PlanRelay local read-only proxy",
+        "GPT Connector local read-only proxy",
         instructions="Read only the paired project's context and run status.",
     )
     read = ToolAnnotations(
