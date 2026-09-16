@@ -2,7 +2,23 @@
 
 网页 GPT 想方案，Codex 写代码。用你自己的 GitHub 私有仓库交接，不用复制整段方案。
 
-先在 Codex 安装 GPT Connector，网页端启用 GitHub。然后按下面三步使用。
+![GPT Connector：网页规划，通过私有 GitHub 仓库交给 Codex 开发并回传结果](assets/gpt-connector-hero.png)
+
+## 下载
+
+```sh
+git clone -b main https://github.com/yusenthebot/planrelay.git gpt-connector
+cd gpt-connector
+uv sync --locked
+```
+
+需要 Python 3.12+、[uv](https://docs.astral.sh/uv/getting-started/installation/) 和 GitHub CLI（`gh`）。
+
+下载后，在 Codex 打开这个目录，发送：
+
+> 请把当前目录的 GPT Connector 安装为本机 Codex 插件，保留已有插件配置，验证 MCP 和 skill 可用；如果需要我授权，请告诉我。
+
+安装完成后新开一个 Codex 任务，网页端启用 GitHub。然后按下面三步使用。
 
 ## 1. 第一次：发给 Codex
 
